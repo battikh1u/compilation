@@ -9,6 +9,7 @@ import yal.arbre.expressions.operations.binaire.arithmetique.*;
 import yal.arbre.expressions.operations.binaire.comparaison.*;
 import yal.arbre.expressions.operations.binaire.logique.*;
 import yal.arbre.expressions.operations.unaire.*;
+import yal.arbre.expressions.operations.*;
 import yal.exceptions.AnalyseSyntaxiqueException;
 import yal.table.*;
 
@@ -64,13 +65,13 @@ parser code {:
 /* Terminals (tokens returned by the scanner).  */
 
 terminal Symbol    PROGRAMME, DEBUT, FIN, POINTVIRGULE, ECRIRE, EGALE, PLUS, MOINS, MULT, DIV, ENTIER, LIRE, OPEREGALE, OPERNEGALE, PARGAUCHE, PARDROITE, OPET, OPOU,
-                    PGQ,PPQ,NON,AFFECTATION,OPERATION,BOOLEAN;
+                    PGQ,PPQ,NON,AFFECTATION,OPERATION,BOOLEAN,TQ,REPEAT,FINTQ,SI,SINON,ALORS,FINSI,FONCTION,RETOURNE;
 terminal String    IDF, CSTENTIERE ;
 /* Non terminals used in the grammar section.  */
 
-non terminal ArbreAbstrait PROG, LINST, INST,CODE_PROG ;
+non terminal ArbreAbstrait PROG, LINST, INST,CODE_PROG,RETOURNER ;
 non terminal Expression EXP ;
-non terminal DECAL_LIST,DECAL_VAR;
+non terminal DECAL_LIST,DECAL_VAR,DECAL_FONCTION,FONCTION_PARAM,FONCTION_VARIABLE,PARAM;
 
 precedence left OPOU;   //ou    // Moins important
 precedence left OPET;   //et
@@ -96,14 +97,27 @@ CODE_PROG ::= DECAL_LIST LINST:li
                 {: RESULT = li; :}
                 ;
 
-DECAL_LIST ::= DECAL_VAR DECAL_LIST  |DECAL_VAR;
+DECAL_LIST ::= DECAL_VAR DECAL_LIST  |DECAL_VAR | DECAL_FONCTION DECAL_LIST| DECAL_FONCTION;
 
-
+DECAL_FONCTION::= FONCTION IDF:idf  PARAM DEBUT LINST:li FIN
+                    {:
+                        Tds.getInstance().ajouter(new EntreeFonction(idf),new SymboleFonction(),idfleft);
+                        Tds.getInstance().accrementerNumbloc();
+                        int bloc=Tds.getInstance().getBloc();
+                        DeclarationFonction f=new DeclarationFonction(idfleft,idf,bloc);
+                        f.ajouter((BlocDInstructions)li);
+                        RetourneFonction r=new RetourneFonction(eleft,e);
+                    :};
+FONCTION_VARIABLE::= DECAL_VAR FONCTION_VARIABLE| DECAL_VAR;
+PARAM ::= PARGAUCHE PARDROITE
+            |
+           PARGAUCHE ENTIER IDF:idf PARDROITE
+           ;
 DECAL_VAR ::= ENTIER IDF:idf POINTVIRGULE
                 {: Tds.getInstance().ajouter(new EntreeVar(idf),
                 new SymboleEntier(),idfleft);  :}
                 |
-                BOOLEAN IDF:idf POINTVIRGULE
+                BOOLEAN IDF:idf POINTVIRGULE/home/battikh/Bureau/intelij/compilation
                 {:Tds.getInstance().ajouter(new EntreeVar(idf),new SymboleBool(),idfleft);:}
                 ;
 LINST   ::=     LINST:li  INST:i
@@ -127,7 +141,31 @@ INST    ::=     ECRIRE EXP:e POINTVIRGULE
                 |
                 IDF:idf EGALE EXP:e POINTVIRGULE
                  {: RESULT=new Affectation(idfleft+1,idf,e); :}
+                 |
+                 TQ EXP:e REPEAT LINST:li FINTQ
+                 {:Boucle b=new Boucle(e,eleft);
+                    b.ajouter(((BlocDInstructions)li));
+                    RESULT=b;:}
+                  |
+                  SI EXP:e ALORS LINST:li FINSI
+                  {:Condition c=new Condition(e,eleft);
+                    c.ajouterSi((BlocDInstructions)li);
+                    RESULT=c;:}
+                  |
+                  SI EXP:e ALORS LINST:li SINON LINST:lii FINSI
+                  {: Condition c=new Condition(e,eleft);
+                                         c.ajouterSi((BlocDInstructions)li);
+                                         c.ajouterSinon((BlocDInstructions)lii);
+                                         RESULT=c;:}
+
+                  |
+                  RETOURNER:ret
+                  {:RESULT=ret;:}
                  ;
+RETOURNER ::= RETOURNE EXP:e POINTVIRGULE
+                {:RESULT=new RetourneFonction(eleft,e);:}
+                ;
+
 EXP    ::=     CSTENTIERE:c
                 {: RESULT = new ConstanteEntiere(c, cleft + 1) ; :}
                 |

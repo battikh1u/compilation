@@ -22,7 +22,7 @@ public class Yal {
 
             String nomSortie = nomFichier.replaceAll("[.]yal", ".mips") ;
             PrintWriter flot = new PrintWriter(new BufferedWriter(new FileWriter(nomSortie))) ;
-            String stringMIPS = ".text\nmain:\n#reservation d'espace\naddi $sp, $sp,";
+            String stringMIPS = ".text\nmain:\n#reservation d'espace\naddi $s7, $s7,";
             stringMIPS= stringMIPS+Tds.getInstance().getTailleZoneVariable()+"\n";
 
             //System.out.println(arbre.toMIPS());

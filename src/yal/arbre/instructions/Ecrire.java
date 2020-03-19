@@ -23,7 +23,7 @@ public class Ecrire extends Instruction {
 
     @Override
     public String toMIPS() {
-        String stringMIPS = "#instruction:\n"+"li $v0,1\n"+exp.toMIPS()+"syscall\n";
+        String stringMIPS = "#instruction:\n"+"li $v0,1\n"+/*exp.toMIPS()+*/"syscall\n";
         return stringMIPS;
     }
 

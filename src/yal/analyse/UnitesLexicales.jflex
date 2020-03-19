@@ -75,8 +75,15 @@ espace = {finDeLigne}  | [ \t\f] | {commentaire}
 
 "("                    { return symbol (CodesLexicaux.PARGAUCHE); }
 ")"                    { return symbol (CodesLexicaux.PARDROITE); }
-
-
+"tantque"              { return symbol (CodesLexicaux.TQ);}
+"fintantque"           { return symbol (CodesLexicaux.FINTQ);}
+"repeter"              { return symbol (CodesLexicaux.REPEAT);}
+"si"                   { return symbol(CodesLexicaux.SI);}
+"sinon"                { return symbol(CodesLexicaux.SINON);}
+"alors"                { return symbol(CodesLexicaux.ALORS);}
+"finsi"                { return symbol(CodesLexicaux.FINSI);}
+"fonction"             { return symbol(CodesLexicaux.FONCTION);}
+"retourne"              { return symbol(CodesLexicaux.RETOURNE);}
 {csteE}      	       { return symbol(CodesLexicaux.CSTENTIERE, yytext()); }
 
 {idf}     	           { return symbol(CodesLexicaux.IDF, yytext()); }

@@ -8,5 +8,13 @@ public class SymboleFonction extends Symbole {
     public String getType(){
         return type;
     }
+    @Override
+    public void setDecal(int decal) {
+        super.setDecal(decal);
+    }
 
+    @Override
+    public int getDecal() {
+        return super.getDecal();
+    }
 }

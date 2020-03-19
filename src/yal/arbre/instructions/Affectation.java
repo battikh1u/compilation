@@ -31,7 +31,7 @@ public class Affectation extends Instruction{
 
         String mips="\n#affectation\n";
         mips += exp.toMIPS();
-        mips = mips+"sw $v0,"+var.getSymbole().getDecal()+"($sp)";
+        mips = mips+"sw $v0,"+var.getSymbole().getDecal()+"($s7)";
         return mips;
     }
 }

@@ -33,15 +33,15 @@ public abstract class Binaire extends Expression {
 		
 		mips.append("# empiler l'expression de gauche\n");
 		
-		mips.append("sw $v0, 0($sp)\n");
-		mips.append("addi $sp, $sp, -4\n");
+		mips.append("sw $v0, 0($s7)\n");
+		mips.append("addi $s7, $s7, -4\n");
 		
 		mips.append("# calcul de l'expression de droite\n");
 		mips.append(expdroite.toMIPS());
 		
 		mips.append("# depiler l'expression de  gauche dans $t8\n");
-		mips.append("addi $sp, $sp, 4\n");
-		mips.append("lw $t8, 0($sp)\n");
+		mips.append("addi $s7, $s7, 4\n");
+		mips.append("lw $t8, 0($s7)\n");
 		return mips.toString();
     }
 
